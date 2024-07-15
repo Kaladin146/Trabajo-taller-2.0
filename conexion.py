@@ -56,8 +56,8 @@ class Database:
                         db.Registrar_Hab()
                     elif elige3=='2':
                         db.Registrar_pasajero()    
-                    # elif elige3==3:
-                    #     db.Tabla_resumen_Habitacion()
+                    elif elige3=='3':
+                        db.Tabla_resumen_Habitacion()
                     elif elige3=='4':
                        db.Tabla_resumen_Pasajero()
                     elif elige3=='5':
@@ -72,7 +72,7 @@ class Database:
                         break
             else:
                 print('Acceso denegado')
-                input('Presione Enter para continuar...')
+                input('Presione cualquier tecla para continuar...')
                 system('cls')
                 db.cerrarBD()
         except Exception as err:
@@ -105,7 +105,7 @@ class Database:
                         ('Elige una opción valida')
             else:
                 print('Acceso Denegado')
-                input('Presione Enter para continuar...')    
+                input('Presione cualquier tecla para continuar...')    
                 system('cls')
                 db.cerrarBD()
         except Exception as err:
@@ -125,72 +125,70 @@ class Database:
                     self.cursor.execute(sql2)
                     self.conexion.commit()
                     print('Se ha creado un nuevo usuario')
-                    input('Presion Enter para continuar...')
+                    input('Presione cualquier tecla para continuar...')
                     system('cls')
                 except Exception as err:
                     self.conexion.rollback()
                     print(err)
             else:
                 print('Ya existe un usuario con los datos ingresados')
-                input('Presione Enter para continuar...')
+                input('Presione cualquier tecla para continuar...')
                 system('cls')
         except Exception as err:
             self.conexion.rollback()
             print(err)
     
     def Registrar_Hab(self):
-        id=int(input('Ingrese ID para la habitación= '))
-        sql1='select ID_HABITACION from HABITACION where ID_HABITACION='+repr(id)
+        id = int(input('Ingrese ID para la habitación= '))
+        sql1 = 'SELECT ID_HABITACION FROM HABITACION WHERE ID_HABITACION = %s'
         try:
-            self.cursor.execute(sql1)
-            if self.cursor.fetchone()==None:
-                Num_habitacion=int(input('Ingrese el número de la habitación: '))
-                cant_max=int(input('Ingrese el número máximo de pasajeros para la habitación: '))
-                Orientacion=input('Ingrese la orientacion de la habitación: ')
-                sql2='insert into HABITACION values('+repr(id)+','+repr(Num_habitacion)+','+repr(cant_max)+','+repr(Orientacion)+','+repr('')+','+repr('')+','+repr('')+')'
+            self.cursor.execute(sql1, (id,))
+            if self.cursor.fetchone() is None:
+                Num_habitacion = int(input('Ingrese el número de la habitación: '))
+                cant_max = int(input('Ingrese el número máximo de pasajeros para la habitación: '))
+                Orientacion = input('Ingrese la orientación de la habitación: ')
+                sql2 = 'INSERT INTO HABITACION (ID_HABITACION, NUM_HABITACION, CANT_ADMITIDA, ORIENTACION) VALUES (%s, %s, %s, %s)'
                 try:
-                    self.cursor.execute(sql2)
+                    self.cursor.execute(sql2, (id, Num_habitacion, cant_max, Orientacion))
                     self.conexion.commit()
-                    print('Nueva habitacion registrada')
-                    input('Presione Enter para continuar...')
-                    system('cls')
+                    print('Nueva habitación registrada')
                 except Exception as err:
                     self.conexion.rollback()
-                    print(err)
+                    print(f'Error al registrar la habitación: {err}')
             else:
-                print('Ya existe una habitacion con el ID ingresado')
-                input('Presione Enter para continuar...')
-                system('cls')    
+                print('Ya existe una habitación con el ID ingresado')
         except Exception as err:
-            print(err)              
-        return Num_habitacion        
+            print(f'Error al verificar la habitación: {err}')
+        input('Presione cualquier tecla para continuar...')
+        system('cls')
+        return Num_habitacion     
     
+  
+        
     def Registrar_pasajero(self):
-        Rut_pasajero=input('Ingrese rut del pasajero: ')
-        sql1='select RUT_PASAJERO from PASAJERO where RUT_PASAJERO='+repr(Rut_pasajero)
+        Rut_pasajero = input('Ingrese RUT del pasajero: ')
+        sql1 = 'SELECT RUT_PASAJERO FROM PASAJERO WHERE RUT_PASAJERO = %s'
         try:
-            self.cursor.execute(sql1)
-            if self.cursor.fetchone()==None:
-                Nombre_pasajero=input('Ingrese nombre del pasajero: ')
-                Tipo_habitacion=input('Ingrese tipo de habitacion deseada: ')
-                Cantidad_pasajeros=int(input('Ingrese la cantidad de pasajeros a hospedar: '))
-                sql2='insert into PASAJERO values('+repr(Rut_pasajero)+','+repr(Nombre_pasajero)+','+repr(Tipo_habitacion)+','+repr(Cantidad_pasajeros)+')'
-                try:
-                    self.cursor.execute(sql2)
-                    self.conexion.commit()
-                    print('Pasajero registrado')
-                    input('Presione Enter para continuar...')
-                    system('cls')
-                except Exception as err:
-                    self.conexion.rollback()
-                    print(err)
-            else:
-                print('Ya existe un pasajero con el rut ingresado: ')
-                input('Presione Enter para continuar...')
-                system('cls')            
+             self.cursor.execute(sql1, (Rut_pasajero,))
+             if self.cursor.fetchone() is None:
+                 Nombre_pasajero = input('Ingrese nombre del pasajero: ')
+                 Tipo_habitacion = input('Ingrese tipo de habitación deseada: ')
+                 Cantidad_pasajeros = int(input('Ingrese la cantidad de pasajeros a hospedar: '))
+                 sql2 = 'INSERT INTO PASAJERO (RUT_PASAJERO, NOMBRE_PASAJERO, TIPO_HABITACION, CANT_PASAJEROS) VALUES (%s, %s, %s, %s)'
+                 try:
+                     self.cursor.execute(sql2, (Rut_pasajero, Nombre_pasajero, Tipo_habitacion, Cantidad_pasajeros))
+                     self.conexion.commit()
+                     print('Pasajero registrado')
+                 except Exception as err:
+                     self.conexion.rollback()
+                     print(f'Error al registrar al pasajero: {err}')
+             else:
+                 print('Ya existe un pasajero con el RUT ingresado')
         except Exception as err:
-            print(err)   
-        return Nombre_pasajero    
+            print(f'Error al verificar el pasajero: {err}')
+        input('Presione cualquier tecla para continuar...')
+        system('cls')
+        return Cantidad_pasajeros
             
     
 
@@ -210,14 +208,14 @@ class Database:
                                 self.cursor.execute(sql2)
                                 self.conexion.commit()
                                 print('Habitacion eliminada')
-                                input('Presione Enter para continuar...')
+                                input('Presione cualquier tecla para continuar...')
                                 system('cls')
                             except Exception as err:
                                 self.conexion.rollback()
                                 print(err)    
                         else:
                             print('Existe un pasajero asignado a esta habitacion, por lo tanto no se puede eliminar esta habitacion')
-                            input('Presione Enter para continuar...')
+                            input('Presione cualquier tecla para continuar...')
                             system('cls')
                     except Exception as err:
                         self.conexion.rollback()
@@ -227,53 +225,181 @@ class Database:
                     print(err)
             else:
                 print('No existe habitacion con el codigo ingresado')
-                input('Presione Enter para continuar...')
+                input('Presione cualquier tecla para continuar...')
                 system('cls')
         except Exception as err:
             print(err)                    
     
-                    
     def Asignacion(self):
         fechaactual = datetime.now()
-        Id_asignacion = int(input('Ingrese id de asignacion: '))
-        # Consulta para verificar si existe una asignación con el mismo ID
+        Id_asignacion = int(input('Ingrese ID de asignación: '))
         sql1 = 'SELECT * FROM ASIGNACION WHERE ID_ASIGNACION = %s'
         try:
             self.cursor.execute(sql1, (Id_asignacion,))
             if self.cursor.fetchone() is None:
-                Rut_pasajero = input('Ingrese el rut del pasajero que desea asignar: ')
-                Nombre_pasajero=input('Ingrese el nombre del pasajero: ')
-                Id_habitacion = int(input('Ingrese el ID de la habitacion que desea asignar: '))
-                Num_habitacion=int(input('Ingrese el numero de la habitacion: '))
-                Costo = int(input('Ingrese el costo de la habitacion: '))
+                Rut_pasajero = input('Ingrese el RUT del pasajero que desea asignar: ')
+                Nombre_pasajero = input('Ingrese el nombre del pasajero: ')
+                Id_habitacion = int(input('Ingrese el ID de la habitación que desea asignar: '))
+                Num_habitacion = int(input('Ingrese el número de la habitación: '))
+                Costo = int(input('Ingrese el costo de la habitación: '))
+                
+                # Validar que Id_habitacion, Num_habitacion y Costo sean mayores que 0
+                if Id_habitacion <= 0 or Num_habitacion <= 0 or Costo <= 0:
+                    print('Error: ID de habitación, número de habitación y costo deben ser mayores que 0.')
+                    input('Presione cualquier tecla para continuar...')
+                    system('cls')
+                    return
+
                 Fecha = fechaactual
-                # Uso de parámetros en lugar de concatenar strings para evitar SQL Injection
-                sql2 = '''
-                INSERT INTO ASIGNACION (ID_ASIGNACION, RUT_PASAJERO,PASAJERO_RESPONSABLE, ID_HABITACION,NUM_HABITACION, COSTO, FECHA)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                '''
-                try:
-                    self.cursor.execute(sql2, (Id_asignacion, Rut_pasajero,Nombre_pasajero, Id_habitacion,Num_habitacion, Costo, Fecha))
-                    self.conexion.commit()
-                    print('Pasajero Asignado')
-                except Exception as err:
-                    self.conexion.rollback()
-                    print(f'Error al realizar la asignación: {err}')
-                input('Presione Enter para continuar...')
-                system('cls')
-                sql3='''update HABITACION set PASAJERO_RESPONSABLE =%s , COSTO=%s where ID_HABITACION=%s'''
-                try:
-                    self.cursor.execute(sql3,(Nombre_pasajero,Costo,Id_habitacion))
-                    self.conexion.commit()
-                except Exception as err:
-                    self.conexion.rollback()
-                    print('Error al añadir a habitacion')        
+
+                # Verificar si el RUT del pasajero está registrado en la tabla PASAJERO
+                sql2 = 'SELECT CANT_PASAJEROS FROM PASAJERO WHERE RUT_PASAJERO = %s'
+                self.cursor.execute(sql2, (Rut_pasajero,))
+                resultado_pasajero = self.cursor.fetchone()
+                if resultado_pasajero:
+                    cant_pasejeros = resultado_pasajero[0]
+                else:
+                    print('El RUT del pasajero ingresado no está registrado.')
+                    input('Presione cualquier tecla para continuar...')
+                    system('cls')
+                    return
+
+                # Verificar si la habitación está ocupada
+                sql3 = 'SELECT COUNT(*) FROM ASIGNACION WHERE ID_HABITACION = %s'
+                self.cursor.execute(sql3, (Id_habitacion,))
+                ocupacion_actual = self.cursor.fetchone()[0]
+
+                if ocupacion_actual > 0:
+                    print('La habitación ya tiene un pasajero asignado.')
+                    input('Presione cualquier tecla para continuar...')
+                    system('cls')
+                    return
+
+                # Verificar la capacidad máxima de la habitación
+                sql4 = 'SELECT CANT_ADMITIDA FROM HABITACION WHERE ID_HABITACION = %s'
+                self.cursor.execute(sql4, (Id_habitacion,))
+                resultado_habitacion = self.cursor.fetchone()
+                if resultado_habitacion:
+                    cant_admitida = resultado_habitacion[0]
+
+                    if cant_pasejeros != cant_admitida:
+                        print(f'Error: La cantidad de pasajeros ({cant_pasejeros}) debe coincidir con la capacidad máxima ({cant_admitida}) de la habitación.')
+                        input('Presione cualquier tecla para continuar...')
+                        system('cls')
+                        return
+
+                    sql5 = '''
+                    INSERT INTO ASIGNACION (ID_ASIGNACION, RUT_PASAJERO, PASAJERO_RESPONSABLE, ID_HABITACION, NUM_HABITACION, COSTO, FECHA)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    '''
+                    try:
+                        self.cursor.execute(sql5, (Id_asignacion, Rut_pasajero, Nombre_pasajero, Id_habitacion, Num_habitacion, Costo, Fecha))
+                        self.conexion.commit()
+                        print('Pasajero asignado')
+                    except Exception as err:
+                        self.conexion.rollback()
+                        print(f'Error al realizar la asignación: {err}')
+
+                    # Actualizar PASAJERO_RESPONSABLE y ESTADO en la tabla HABITACION
+                    sql6 = 'UPDATE HABITACION SET PASAJERO_RESPONSABLE = %s, COSTO = %s, ESTADO = %s WHERE ID_HABITACION = %s'
+                    try:
+                        self.cursor.execute(sql6, (Nombre_pasajero, Costo, 'OCUPADO', Id_habitacion))
+                        self.conexion.commit()
+                    except Exception as err:
+                        self.conexion.rollback()
+                        print(f'Error al actualizar la habitación: {err}')
+                else:
+                    print('No existe una habitación con el ID ingresado.')
             else:
                 print('Ya existe una asignación con esa ID')
-                input('Presione Enter para continuar...')
-                system('cls')
         except Exception as err:
-            print(f'Error al verificar la asignación: {err}')                
+            print(f'Error al verificar la asignación: {err}')
+        input('Presione cualquier tecla para continuar...')
+        system('cls')
+
+    
+    
+    # def Asignacion(self):
+    #     fechaactual = datetime.now()
+    #     Id_asignacion = int(input('Ingrese ID de asignación: '))
+    #     sql1 = 'SELECT * FROM ASIGNACION WHERE ID_ASIGNACION = %s'
+    #     try:
+    #         self.cursor.execute(sql1, (Id_asignacion,))
+    #         if self.cursor.fetchone() is None:
+    #             Rut_pasajero = input('Ingrese el RUT del pasajero que desea asignar: ')
+    #             Nombre_pasajero = input('Ingrese el nombre del pasajero: ')
+    #             Id_habitacion = int(input('Ingrese el ID de la habitación que desea asignar: '))
+    #             Num_habitacion = int(input('Ingrese el número de la habitación: '))
+    #             Costo = int(input('Ingrese el costo de la habitación: '))
+    #             Fecha = fechaactual
+
+    #             # Verificar si el RUT del pasajero está registrado en la tabla PASAJERO
+    #             sql2 = 'SELECT CANT_PASAJEROS FROM PASAJERO WHERE RUT_PASAJERO = %s'
+    #             self.cursor.execute(sql2, (Rut_pasajero,))
+    #             resultado_pasajero = self.cursor.fetchone()
+    #             if resultado_pasajero:
+    #                 cant_pasejeros = resultado_pasajero[0]
+    #             else:
+    #                 print('El RUT del pasajero ingresado no está registrado.')
+    #                 input('Presione cualquier tecla para continuar...')
+    #                 system('cls')
+    #                 return
+
+    #             # Verificar si la habitación está ocupada
+    #             sql3 = 'SELECT COUNT(*) FROM ASIGNACION WHERE ID_HABITACION = %s'
+    #             self.cursor.execute(sql3, (Id_habitacion,))
+    #             ocupacion_actual = self.cursor.fetchone()[0]
+
+    #             if ocupacion_actual > 0:
+    #                 print('La habitación ya tiene un pasajero asignado.')
+    #                 input('Presione cualquier tecla para continuar...')
+    #                 system('cls')
+    #                 return
+
+    #             # Verificar la capacidad máxima de la habitación
+    #             sql4 = 'SELECT CANT_ADMITIDA FROM HABITACION WHERE ID_HABITACION = %s'
+    #             self.cursor.execute(sql4, (Id_habitacion,))
+    #             resultado_habitacion = self.cursor.fetchone()
+    #             if resultado_habitacion:
+    #                 cant_admitida = resultado_habitacion[0]
+
+    #                 if cant_pasejeros != cant_admitida:
+    #                     print(f'Error: La cantidad de pasajeros ({cant_pasejeros}) debe coincidir con la capacidad máxima ({cant_admitida}) de la habitación.')
+    #                     input('Presione cualquier tecla para continuar...')
+    #                     system('cls')
+    #                     return
+
+    #                 sql5 = '''
+    #                 INSERT INTO ASIGNACION (ID_ASIGNACION, RUT_PASAJERO, PASAJERO_RESPONSABLE, ID_HABITACION, NUM_HABITACION, COSTO, FECHA)
+    #                 VALUES (%s, %s, %s, %s, %s, %s, %s)
+    #                 '''
+    #                 try:
+    #                     self.cursor.execute(sql5, (Id_asignacion, Rut_pasajero, Nombre_pasajero, Id_habitacion, Num_habitacion, Costo, Fecha))
+    #                     self.conexion.commit()
+    #                     print('Pasajero asignado')
+    #                 except Exception as err:
+    #                     self.conexion.rollback()
+    #                     print(f'Error al realizar la asignación: {err}')
+
+    #                 # Actualizar PASAJERO_RESPONSABLE y ESTADO en la tabla HABITACION
+    #                 sql6 = 'UPDATE HABITACION SET PASAJERO_RESPONSABLE = %s, COSTO = %s, ESTADO = %s WHERE ID_HABITACION = %s'
+    #                 try:
+    #                     self.cursor.execute(sql6, (Nombre_pasajero, Costo, 'OCUPADO', Id_habitacion))
+    #                     self.conexion.commit()
+    #                 except Exception as err:
+    #                     self.conexion.rollback()
+    #                     print(f'Error al actualizar la habitación: {err}')
+    #             else:
+    #                 print('No existe una habitación con el ID ingresado.')
+    #         else:
+    #             print('Ya existe una asignación con esa ID')
+    #     except Exception as err:
+    #         print(f'Error al verificar la asignación: {err}')
+    #     input('Presione cualquier tecla para continuar...')
+    #     system('cls')
+
+    
+              
         
     def Tabla_resumen_Pasajero(self):
         query = "select ID_ASIGNACION, PASAJERO_RESPONSABLE,ID_HABITACION,NUM_HABITACION from ASIGNACION "
@@ -281,67 +407,217 @@ class Database:
         columnas = [desc[0] for desc in self.cursor.description]
         resultados = self.cursor.fetchall()
         print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
-        self.cursor.close()
-        self.conexion.close()
-
+        input('Presione cualquier tecla para continuar...')
+        system('cls')
+    
     def Tabla_resumen_Habitacion(self):
-        query = "select ID_HABITACION,NUM_HABITACION from HABITACION "
+        query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO FROM HABITACION"
         self.cursor.execute(query)
         columnas = [desc[0] for desc in self.cursor.description]
         resultados = self.cursor.fetchall()
         print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
-        self.cursor.close()
-        self.conexion.close()
-        
-    
-    
-                        
-    def Eliminar_pasajero(self):
-            pasajero= input('Ingrese el nombre del pasajero que desea eliminar de la habitacion: ')
-            id_hab = input('Ingrese el ID de la habitacion en la que desea eliminar el pasajero: ')
-            
-            # Verificar si el pasajero está asignado a la habitación
-            sql1 = '''
-            SELECT * FROM HABITACION WHERE PASAJERO_RESPONSABLE = %s AND ID_HABITACION = %s
-            '''
-            try:
-                self.cursor.execute(sql1, (pasajero, id_hab))
-                if self.cursor.fetchone() is not None:
-                    # Actualizar el campo PASAJEROS_PASADOS en la habitación
-                    sql2 = '''
-                    UPDATE HABITACION 
-                    SET PASAJEROS_PASADOS = CONCAT(COALESCE(PASAJEROS_PASADOS, ''), %s, ', ')
-                    WHERE ID_HABITACION = %s
-                    '''
-                    try:
-                        self.cursor.execute(sql2, (pasajero, id_hab))
-                        self.conexion.commit()
-                    except Exception as err:
-                        self.conexion.rollback()
-                        print(f'Error al actualizar PASAJEROS_PASADOS: {err}')
-                        return  # Salir de la función en caso de error
+        input('Presione cualquier tecla para continuar...')
+        system('cls')
+   
 
-                    # Eliminar el pasajero responsable de la habitación
-                    sql3 = '''
-                    UPDATE HABITACION 
-                    SET PASAJERO_RESPONSABLE = NULL 
-                    WHERE ID_HABITACION = %s
-                    '''
-                    try:
-                        self.cursor.execute(sql3, (id_hab,))
-                        self.conexion.commit()
-                        print('Pasajero eliminado')
-                        input('Presione Enter para continuar...')
-                        system('cls')  # O usa 'clear' en sistemas Unix/Linux
-                    except Exception as err:
-                        self.conexion.rollback()
-                        print(f'Error al eliminar el pasajero: {err}')
-                else:
-                    print('No existe el pasajero con el nombre solicitado en la habitación indicada.')
-                    input('Presione Enter para continuar...')
-                    system('cls')  # O usa 'clear' en sistemas Unix/Linux
-            except Exception as err:
-                print(f'Error en la consulta: {err}')       
+    # def Tabla_resumen_Habitacion(self):
+    #     query = "select ID_HABITACION,NUM_HABITACION from HABITACION "
+    #     self.cursor.execute(query)
+    #     columnas = [desc[0] for desc in self.cursor.description]
+    #     resultados = self.cursor.fetchall()
+    #     print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
+    #     input('Presione cualquier tecla para continuar...')
+    #     system('cls')
+    
+    
+    def Eliminar_pasajero(self):
+        # Mostrar las asignaciones actuales
+        query = "SELECT ID_ASIGNACION, PASAJERO_RESPONSABLE, ID_HABITACION, NUM_HABITACION FROM ASIGNACION"
+        self.cursor.execute(query)
+        columnas = [desc[0] for desc in self.cursor.description]
+        resultados = self.cursor.fetchall()
+        print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
+
+        pasajero = input('Ingrese el nombre del pasajero que desea eliminar de la habitación: ')
+        id_hab = int(input('Ingrese el ID de la habitación en la que desea eliminar el pasajero: '))
+
+        # Verificar si el pasajero es el responsable de la habitación y que el ID de la habitación es válido
+        sql1 = '''
+        SELECT * FROM ASIGNACION WHERE PASAJERO_RESPONSABLE = %s AND ID_HABITACION = %s
+        '''
+        try:
+            self.cursor.execute(sql1, (pasajero, id_hab))
+            if self.cursor.fetchone() is not None:
+                # Actualizar PASAJEROS_PASADOS en la tabla HABITACION
+                sql2 = '''
+                UPDATE HABITACION
+                SET PASAJEROS_PASADOS = CONCAT(COALESCE(PASAJEROS_PASADOS, ''), %s, ', ')
+                WHERE ID_HABITACION = %s
+                '''
+                try:
+                    self.cursor.execute(sql2, (pasajero, id_hab))
+                    self.conexion.commit()
+                except Exception as err:
+                    self.conexion.rollback()
+                    print(f'Error al actualizar PASAJEROS_PASADOS: {err}')
+                    return  
+
+                # Eliminar el pasajero de la tabla ASIGNACION
+                sql3 = '''
+                DELETE FROM ASIGNACION WHERE PASAJERO_RESPONSABLE = %s AND ID_HABITACION = %s
+                '''
+                try:
+                    self.cursor.execute(sql3, (pasajero, id_hab))
+                    self.conexion.commit()
+                except Exception as err:
+                    self.conexion.rollback()
+                    print(f'Error al eliminar el pasajero de ASIGNACION: {err}')
+                    return
+
+                # Actualizar PASAJERO_RESPONSABLE y ESTADO en la tabla HABITACION
+                sql4 = '''
+                UPDATE HABITACION 
+                SET PASAJERO_RESPONSABLE = NULL, ESTADO = %s
+                WHERE ID_HABITACION = %s
+                '''
+                try:
+                    self.cursor.execute(sql4, ('VACANTE', id_hab))
+                    self.conexion.commit()
+                    print('Pasajero eliminado')
+                except Exception as err:
+                    self.conexion.rollback()
+                    print(f'Error al actualizar PASAJERO_RESPONSABLE y ESTADO en HABITACION: {err}')
+            else:
+                print('No existe el pasajero con el nombre solicitado en la habitación indicada.')
+                input('Presione cualquier tecla para continuar...')
+                system('cls')
+        except Exception as err:
+            print(f'Error en la consulta: {err}')
+
+    
+    # def Eliminar_pasajero(self):
+    #     # Mostrar las asignaciones actuales
+    #     query = "SELECT ID_ASIGNACION, PASAJERO_RESPONSABLE, ID_HABITACION, NUM_HABITACION FROM ASIGNACION"
+    #     self.cursor.execute(query)
+    #     columnas = [desc[0] for desc in self.cursor.description]
+    #     resultados = self.cursor.fetchall()
+    #     print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
+
+    #     pasajero = input('Ingrese el nombre del pasajero que desea eliminar de la habitación: ')
+    #     id_hab = int(input('Ingrese el ID de la habitación en la que desea eliminar el pasajero: '))
+        
+    #     # Verificar si el pasajero es el responsable de la habitación y que el ID de la habitación es válido
+    #     sql1 = '''
+    #     SELECT * FROM ASIGNACION WHERE PASAJERO_RESPONSABLE = %s AND ID_HABITACION = %s
+    #     '''
+    #     try:
+    #         self.cursor.execute(sql1, (pasajero, id_hab))
+    #         if self.cursor.fetchone() is not None:
+    #             # Actualizar PASAJEROS_PASADOS en la tabla HABITACION
+    #             sql2 = '''
+    #             UPDATE HABITACION
+    #             SET PASAJEROS_PASADOS = CONCAT(COALESCE(PASAJEROS_PASADOS, ''), %s, ', ')
+    #             WHERE ID_HABITACION = %s
+    #             '''
+    #             try:
+    #                 self.cursor.execute(sql2, (pasajero, id_hab))
+    #                 self.conexion.commit()
+    #             except Exception as err:
+    #                 self.conexion.rollback()
+    #                 print(f'Error al actualizar PASAJEROS_PASADOS: {err}')
+    #                 return  
+
+    #             # Eliminar el pasajero de la tabla ASIGNACION
+    #             sql3 = '''
+    #             DELETE FROM ASIGNACION WHERE PASAJERO_RESPONSABLE = %s AND ID_HABITACION = %s
+    #             '''
+    #             try:
+    #                 self.cursor.execute(sql3, (pasajero, id_hab))
+    #                 self.conexion.commit()
+    #             except Exception as err:
+    #                 self.conexion.rollback()
+    #                 print(f'Error al eliminar el pasajero de ASIGNACION: {err}')
+    #                 return
+
+    #             # Actualizar PASAJERO_RESPONSABLE en la tabla HABITACION
+    #             sql4 = '''
+    #             UPDATE HABITACION 
+    #             SET PASAJERO_RESPONSABLE = NULL 
+    #             WHERE ID_HABITACION = %s
+    #             '''
+    #             try:
+    #                 self.cursor.execute(sql4, (id_hab,))
+    #                 self.conexion.commit()
+    #                 print('Pasajero eliminado')
+    #             except Exception as err:
+    #                 self.conexion.rollback()
+    #                 print(f'Error al actualizar PASAJERO_RESPONSABLE en HABITACION: {err}')
+    #         else:
+    #             print('No existe el pasajero con el nombre solicitado en la habitación indicada.')
+    #             input('Presione cualquier tecla para continuar...')
+    #             system('cls')
+    #     except Exception as err:
+    #         print(f'Error en la consulta: {err}')
+
+                        
+    # def Eliminar_pasajero(self):
+    #         query = "select ID_ASIGNACION, PASAJERO_RESPONSABLE,ID_HABITACION,NUM_HABITACION from ASIGNACION "
+    #         self.cursor.execute(query)
+    #         columnas = [desc[0] for desc in self.cursor.description]
+    #         resultados = self.cursor.fetchall()
+    #         print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
+        
+        
+        
+    #         pasajero= input('Ingrese el nombre del pasajero que desea eliminar de la habitacion: ')
+    #         id_hab = input('Ingrese el ID de la habitacion en la que desea eliminar el pasajero: ')
+    #         sql1 = '''
+    #         SELECT * FROM HABITACION WHERE PASAJERO_RESPONSABLE = %s AND ID_HABITACION = %s
+    #         '''
+    #         try:
+    #             self.cursor.execute(sql1, (pasajero, id_hab))
+    #             if self.cursor.fetchone() is not None:
+                    
+    #                 sql2 = '''
+    #                 UPDATE HABITACION 
+    #                 SET PASAJEROS_PASADOS = CONCAT(COALESCE(PASAJEROS_PASADOS, ''), %s, ', ')
+    #                 WHERE ID_HABITACION = %s
+    #                 '''
+    #                 try:
+    #                     self.cursor.execute(sql2, (pasajero, id_hab))
+    #                     self.conexion.commit()
+    #                 except Exception as err:
+    #                     self.conexion.rollback()
+    #                     print(f'Error al actualizar PASAJEROS_PASADOS: {err}')
+    #                     return  
+
+    #                 sql3 = '''
+    #                 UPDATE HABITACION 
+    #                 SET PASAJERO_RESPONSABLE = NULL 
+    #                 WHERE ID_HABITACION = %s
+    #                 '''
+    #                 try:
+    #                     self.cursor.execute(sql3, (id_hab,))
+    #                     self.conexion.commit()
+    #                     print('Pasajero eliminado')
+    #                     input('Presione cualquier tecla para continuar...')
+    #                     system('cls')  
+    #                 except Exception as err:
+    #                     self.conexion.rollback()
+    #                     print(f'Error al eliminar el pasajero: {err}')
+    #                 sql4:'delete from ASIGNACION where PASAJERO_RESPONSABLE =%s '''
+    #                 try: 
+    #                     self.cursor.execute(sql4,(pasajero))
+    #                     self.conexion.commit()
+    #                 except Exception as err:
+    #                     self.conexion.rollback()        
+                        
+    #             else:
+    #                 print('No existe el pasajero con el nombre solicitado en la habitación indicada.')
+    #                 input('Presione cualquier tecla para continuar...')
+    #                 system('cls')  
+    #         except Exception as err:
+    #             print(f'Error en la consulta: {err}')       
                     
                 
         
