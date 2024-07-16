@@ -30,7 +30,7 @@ class Database:
         sql1='insert into ADMINISTRADOR values('+repr(rut_admin)+','+repr(password_admin)+')'
         self.cursor.execute(sql1)
         return rut_admin,password_admin
-    
+
     def Entra_usuario(self):
         db=Database()
         nombre_usuario,password_usuario=self.login_usuario()
@@ -85,6 +85,7 @@ class Database:
             
     
     def Entra_admin(self):
+        system('cls')
         db=Database()
         rut_admin=input('Ingrese rut del administrador: ')
         password_admin=input('Ingrese password del administrador: ')
