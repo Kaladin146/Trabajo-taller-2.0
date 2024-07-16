@@ -1,5 +1,4 @@
 import mysql.connector 
-from hashlib import md5
 from tabulate import tabulate 
 from os import system
 from datetime import datetime
@@ -40,6 +39,7 @@ class Database:
             self.cursor.execute(sql1)
             result=self.cursor.fetchone()
             if result!=None and result[1]==nombre_usuario and result[2]==password_usuario:
+                system('cls')
                 print('Bienvenido',nombre_usuario) 
                 while True:
                     elige3=input('\nElige una opción:\n\
@@ -51,7 +51,7 @@ class Database:
                     Asignar Pasajero (6)\n\
                     Eliminar Pasajero(7)\n\
                     Ver Habitaciones eliminadas(8)\n\
-                    Salir(s)\n=>')
+                    Salir(s)\n=>').lower()
                     if elige3=='1':
                         db.Registrar_Hab()
                     elif elige3=='2':
@@ -72,6 +72,8 @@ class Database:
                         db.cerrarBD()      
                         system('cls')
                         break
+                    else:
+                        print('Seleccione una opción válida')
             else:
                 print('Acceso denegado')
                 input('Presione Enter para continuar...')
@@ -87,7 +89,8 @@ class Database:
         rut_admin=input('Ingrese rut del administrador: ')
         password_admin=input('Ingrese password del administrador: ')
         rut_admin,password_admin=self.login_admin()
-        sql1='select * from ADMINISTRADOR where RUT_ADMIN='+repr(rut_admin)+'and CONTRASEÑA='+repr(password_admin)            
+        sql1='select * from ADMINISTRADOR where RUT_ADMIN='+repr(rut_admin)+'and CONTRASEÑA='+repr(password_admin)       
+        system('cls')     
         try:
             self.cursor.execute(sql1)
             result=self.cursor.fetchone()
@@ -143,6 +146,8 @@ class Database:
              print(err)
     
     def Registrar_Hab(self):
+        system('cls')
+        print('----Registrando habitación----')
         id = int(input('Ingrese ID para la habitación= '))
         Num_habitacion = int(input('Ingrese el número de la habitación: '))
         sql1 = 'SELECT ID_HABITACION and NUM_HABITACION FROM HABITACION WHERE ID_HABITACION = %s'
@@ -170,6 +175,8 @@ class Database:
   
         
     def Registrar_pasajero(self):
+        system('cls')
+        print('----Registrando nuevo pasajero----')
         Rut_pasajero = input('Ingrese RUT del pasajero: ')
         sql1 = 'SELECT RUT_PASAJERO FROM PASAJERO WHERE RUT_PASAJERO = %s'
         try:
@@ -196,6 +203,14 @@ class Database:
     
     
     def Eliminar_Habitacion(self):
+        system('cls')
+        print('----Eliminar habitacion----')
+        query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO,PASAJEROS_PASADOS FROM HABITACION"
+        self.cursor.execute(query)
+        columnas = [desc[0] for desc in self.cursor.description]
+        resultados = self.cursor.fetchall()
+        print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
+        
         Id_habitacion = input('Escriba el id de la habitación que desea eliminar: ')
         
         # Verificar si la habitación existe
@@ -247,14 +262,26 @@ class Database:
 
     
     def Asignacion(self):
+        system('cls')
+        print('----Asignar habitacion----')
         fechaactual = datetime.now()
         Id_asignacion = int(input('Ingrese ID de asignación: '))
         sql1 = 'SELECT * FROM ASIGNACION WHERE ID_ASIGNACION = %s'
         try:
             self.cursor.execute(sql1, (Id_asignacion,))
             if self.cursor.fetchone() is None:
+                query = "select RUT_PASAJERO, NOMBRE_PASAJERO from PASAJERO "
+                self.cursor.execute(query)
+                columnas = [desc[0] for desc in self.cursor.description]
+                resultados = self.cursor.fetchall()
+                print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
                 Rut_pasajero = input('Ingrese el RUT del pasajero que desea asignar: ')
                 Nombre_pasajero = input('Ingrese el nombre del pasajero: ')
+                query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO FROM HABITACION"
+                self.cursor.execute(query)
+                columnas = [desc[0] for desc in self.cursor.description]
+                resultados = self.cursor.fetchall()
+                print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
                 Id_habitacion = int(input('Ingrese el ID de la habitación que desea asignar: '))
                 Num_habitacion = int(input('Ingrese el número de la habitación: '))
                 Costo = int(input('Ingrese el costo de la habitación: '))
@@ -338,7 +365,9 @@ class Database:
               
         
     def Tabla_resumen_Pasajero(self):
-        query = "select ID_ASIGNACION, PASAJERO_RESPONSABLE,ID_HABITACION,NUM_HABITACION from ASIGNACION "
+        system('cls')
+        print('----PASAJEROS----')
+        query = "select ID_ASIGNACION, PASAJERO_RESPONSABLE,ID_HABITACION,NUM_HABITACION,FECHA from ASIGNACION "
         self.cursor.execute(query)
         columnas = [desc[0] for desc in self.cursor.description]
         resultados = self.cursor.fetchall()
@@ -347,7 +376,9 @@ class Database:
         system('cls')
     
     def Tabla_resumen_Habitacion(self):
-        query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO FROM HABITACION"
+        system('cls')
+        print('----HABITACIONES REGISTRADAS----')
+        query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO,PASAJEROS_PASADOS FROM HABITACION"
         self.cursor.execute(query)
         columnas = [desc[0] for desc in self.cursor.description]
         resultados = self.cursor.fetchall()
@@ -360,6 +391,8 @@ class Database:
     
     def Eliminar_pasajero(self):
         # Mostrar las asignaciones actuales
+        system('cls')
+        print('----Eliminar pasajero----')
         query = "SELECT ID_ASIGNACION, PASAJERO_RESPONSABLE, ID_HABITACION, NUM_HABITACION FROM ASIGNACION"
         self.cursor.execute(query)
         columnas = [desc[0] for desc in self.cursor.description]
@@ -412,6 +445,7 @@ class Database:
                     self.cursor.execute(sql4, ('VACANTE', id_hab))
                     self.conexion.commit()
                     print('Pasajero eliminado')
+                    input('Presione Enter para continuar...')
                 except Exception as err:
                     self.conexion.rollback()
                     print(f'Error al actualizar PASAJERO_RESPONSABLE y ESTADO en HABITACION: {err}')
@@ -423,7 +457,9 @@ class Database:
             print(f'Error en la consulta: {err}')
 
     def Hab_eliminadas(self):
-        query = "SELECT ID_HABITACION, NUM_HABITACION,ORIENTACION, PASAJEROS_PASADOS FROM HAB_ELIMINADAS"
+        system('cls')
+        print('----TABLAS ELIMINADAS----')
+        query = "SELECT ID_HABITACION, NUM_HABITACION,ORIENTACION, PASAJEROS_PASADOS FROM HAB_ELIMINADA"
         self.cursor.execute(query)
         columnas = [desc[0] for desc in self.cursor.description]
         resultados = self.cursor.fetchall()
