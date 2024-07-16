@@ -478,7 +478,8 @@ class Database:
         print('No seremos responsables de ningún daño indirecto, incidental, especial o consecuente que surja del uso o la imposibilidad de usar el Programa.')
         print('Podemos modificar estos Términos en cualquier momento. Te notificaremos sobre los cambios mediante una actualización del Programa')
         print('Podemos suspender o terminar tu acceso al Programa si incumples estos Términos. En caso de terminación, debes dejar de usar el Programa y eliminarlo de tus dispositivos.')
-        
+        input('Presione Enter para continuar...')
+        system('cls')
                     
                 
         

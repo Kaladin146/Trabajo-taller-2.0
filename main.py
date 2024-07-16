@@ -21,6 +21,7 @@ while True:
         break    
     else:
         print('selecciona una opción válida')
+        system('cls')
         
                     
                 
