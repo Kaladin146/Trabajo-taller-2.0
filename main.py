@@ -16,6 +16,7 @@ while True:
     elif elige1=='s':
         db.cerrarBD()
         break    
+    
         
                     
                 
