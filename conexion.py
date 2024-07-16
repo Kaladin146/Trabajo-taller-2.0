@@ -468,6 +468,16 @@ class Database:
         input('Presione Enter para continuar...')
         system('cls')
    
+    def Terminos(self):
+        print('---TERMINOS Y CONDICIONES DE USO---')
+        print('Al instalar o usar el Programa, aceptas estos Términos.')
+        print('Te otorgamos una licencia no exclusiva, intransferible y revocable para usar el Programa en tus dispositivos personales.')
+        print('No puedes modificar, distribuir, vender o reproducir el Programa sin nuestro permiso explícito. No debes intentar descompilar, desensamblar ni realizar ingeniería inversa en el Programa.')    
+        print('Todos los derechos de propiedad intelectual sobre el Programa pertenecen a Erico Coronado o a sus licenciantes. No te concedemos ningún derecho sobre esos derechos, excepto lo que se establece en estos Términos.')
+        print('El Programa se proporciona "tal cual" sin garantías de ningún tipo, explícitas o implícitas. No garantizamos que el Programa funcione sin errores o que esté libre de virus.')
+        print('No seremos responsables de ningún daño indirecto, incidental, especial o consecuente que surja del uso o la imposibilidad de usar el Programa.')
+        print('Podemos modificar estos Términos en cualquier momento. Te notificaremos sobre los cambios mediante una actualización del Programa')
+        print('Podemos suspender o terminar tu acceso al Programa si incumples estos Términos. En caso de terminación, debes dejar de usar el Programa y eliminarlo de tus dispositivos.')
         
                     
                 
