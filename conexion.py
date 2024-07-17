@@ -82,7 +82,6 @@ class Database:
             self.conexion.rollback()
             print(err)
             
-    
     def Entra_admin(self):
         system('cls')
         db=Database()
