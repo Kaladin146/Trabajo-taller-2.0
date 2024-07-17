@@ -22,7 +22,7 @@ class Database:
         nombre_usuario=input('Ingrese nombre del usuario: ')
         password_usuario=pwinput('Ingrese password: ')
         return nombre_usuario,password_usuario
-
+ #que pasa daos,da´psd
     def login_admin(self):
         rut_admin='11111111-1'
         password_admin='123'
