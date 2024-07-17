@@ -2,8 +2,7 @@ import mysql.connector
 from tabulate import tabulate 
 from os import system
 from datetime import datetime
-
-
+from pwinput import pwinput
 
 
 class Database:
@@ -21,7 +20,7 @@ class Database:
         
     def login_usuario(self):
         nombre_usuario=input('Ingrese nombre del usuario: ')
-        password_usuario=input('Ingrese password: ')
+        password_usuario=pwinput('Ingrese password: ')
         return nombre_usuario,password_usuario
 
     def login_admin(self):
@@ -157,14 +156,23 @@ class Database:
             if self.cursor.fetchone() is None:
                 cant_max = int(input('Ingrese el número máximo de pasajeros para la habitación: '))
                 Orientacion = input('Ingrese la orientación de la habitación: ')
-                sql2 = 'INSERT INTO HABITACION (ID_HABITACION, NUM_HABITACION, CANT_ADMITIDA, ORIENTACION) VALUES (%s, %s, %s, %s)'
+                Costo = int(input('Ingrese el costo de la habitación: '))
+                sql2 = 'INSERT INTO HABITACION (ID_HABITACION, NUM_HABITACION, CANT_ADMITIDA, ORIENTACION,COSTO) VALUES (%s, %s, %s, %s,%s)'
+                sql3= 'update HABITACION SET ESTADO=%s where ID_HABITACION=%s'
                 try:
-                    self.cursor.execute(sql2, (id, Num_habitacion, cant_max, Orientacion))
+                    self.cursor.execute(sql2, (id, Num_habitacion, cant_max, Orientacion,Costo))
                     self.conexion.commit()
                     print('Nueva habitación registrada')
                 except Exception as err:
                     self.conexion.rollback()
                     print(f'Error al registrar la habitación: {err}')
+                try:
+                        self.cursor.execute(sql3, ('VACANTE',id))
+                        self.conexion.commit()
+                except Exception as err:
+                        self.conexion.rollback()
+                        print(f'Error al actualizar la habitación: {err}')    
+
             else:
                 print('Ya existe una habitación con el ID o numero ingresado')
         except Exception as err:
@@ -271,31 +279,32 @@ class Database:
         try:
             self.cursor.execute(sql1, (Id_asignacion,))
             if self.cursor.fetchone() is None:
-                query = "select RUT_PASAJERO, NOMBRE_PASAJERO from PASAJERO "
+                query = "select RUT_PASAJERO, NOMBRE_PASAJERO,CANT_PASAJEROS from PASAJERO "
                 self.cursor.execute(query)
                 columnas = [desc[0] for desc in self.cursor.description]
                 resultados = self.cursor.fetchall()
                 print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
                 Rut_pasajero = input('Ingrese el RUT del pasajero que desea asignar: ')
                 Nombre_pasajero = input('Ingrese el nombre del pasajero: ')
-                query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO FROM HABITACION"
+                query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO,CANT_ADMITIDA FROM HABITACION"
                 self.cursor.execute(query)
                 columnas = [desc[0] for desc in self.cursor.description]
                 resultados = self.cursor.fetchall()
                 print(tabulate(resultados, headers=columnas, tablefmt="pretty"))
                 Id_habitacion = int(input('Ingrese el ID de la habitación que desea asignar: '))
                 Num_habitacion = int(input('Ingrese el número de la habitación: '))
-                Costo = int(input('Ingrese el costo de la habitación: '))
-                # Validar que Id_habitacion, Num_habitacion y Costo sean mayores que 0
-                if Id_habitacion <= 0 or Num_habitacion <= 0 or Costo <= 0:
-                    print('Error: ID de habitación, número de habitación y costo deben ser mayores que 0.')
+
+               
+
+                if Id_habitacion <= 0 or Num_habitacion <= 0: 
+                    print('Error: ID de habitación, número de habitación deben ser mayores que 0.')
                     input('Presione Enter para continuar...')
                     system('cls')
                     return
 
                 Fecha = fechaactual
 
-                # Verificar si el RUT del pasajero está registrado en la tabla PASAJERO
+               
                 sql2 = 'SELECT CANT_PASAJEROS FROM PASAJERO WHERE RUT_PASAJERO = %s'
                 self.cursor.execute(sql2, (Rut_pasajero,))
                 resultado_pasajero = self.cursor.fetchone()
@@ -332,11 +341,11 @@ class Database:
                         return
 
                     sql5 = '''
-                    INSERT INTO ASIGNACION (ID_ASIGNACION, RUT_PASAJERO, PASAJERO_RESPONSABLE, ID_HABITACION, NUM_HABITACION, COSTO, FECHA)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO ASIGNACION (ID_ASIGNACION, RUT_PASAJERO, PASAJERO_RESPONSABLE, ID_HABITACION, NUM_HABITACION, FECHA)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     '''
                     try:
-                        self.cursor.execute(sql5, (Id_asignacion, Rut_pasajero, Nombre_pasajero, Id_habitacion, Num_habitacion, Costo, Fecha))
+                        self.cursor.execute(sql5, (Id_asignacion, Rut_pasajero, Nombre_pasajero, Id_habitacion, Num_habitacion, Fecha))
                         self.conexion.commit()
                         print('Pasajero asignado')
                     except Exception as err:
@@ -344,9 +353,9 @@ class Database:
                         print(f'Error al realizar la asignación: {err}')
 
                     # Actualizar PASAJERO_RESPONSABLE y ESTADO en la tabla HABITACION
-                    sql6 = 'UPDATE HABITACION SET PASAJERO_RESPONSABLE = %s, COSTO = %s, ESTADO = %s WHERE ID_HABITACION = %s'
+                    sql6 = 'UPDATE HABITACION SET PASAJERO_RESPONSABLE = %s, ESTADO = %s WHERE ID_HABITACION = %s'
                     try:
-                        self.cursor.execute(sql6, (Nombre_pasajero, Costo, 'OCUPADO', Id_habitacion))
+                        self.cursor.execute(sql6, (Nombre_pasajero,  'OCUPADO', Id_habitacion))
                         self.conexion.commit()
                     except Exception as err:
                         self.conexion.rollback()
@@ -379,7 +388,7 @@ class Database:
     def Tabla_resumen_Habitacion(self):
         system('cls')
         print('----HABITACIONES REGISTRADAS----')
-        query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO,PASAJEROS_PASADOS FROM HABITACION"
+        query = "SELECT ID_HABITACION, NUM_HABITACION, ESTADO,PASAJEROS_PASADOS,CANT_ADMITIDA,COSTO FROM HABITACION"
         self.cursor.execute(query)
         columnas = [desc[0] for desc in self.cursor.description]
         resultados = self.cursor.fetchall()
