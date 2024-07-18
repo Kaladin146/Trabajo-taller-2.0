@@ -23,7 +23,7 @@ class Database:
         password_usuario=pwinput('Ingrese password: ')
         return nombre_usuario,password_usuario
 
-
+#que dios se apiade de mi alma
     def Entra_usuario(self):
         db=Database()
         nombre_usuario,password_usuario=self.login_usuario()
