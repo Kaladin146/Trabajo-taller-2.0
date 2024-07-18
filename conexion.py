@@ -23,12 +23,6 @@ class Database:
         password_usuario=pwinput('Ingrese password: ')
         return nombre_usuario,password_usuario
 
-    def login_admin(self):
-        rut_admin='11111111-1'
-        password_admin='123'
-        sql1='insert into ADMINISTRADOR values('+repr(rut_admin)+','+repr(password_admin)+')'
-        self.cursor.execute(sql1)
-        return rut_admin,password_admin
 
     def Entra_usuario(self):
         db=Database()
@@ -83,38 +77,34 @@ class Database:
             print(err)
             
     def Entra_admin(self):
-        system('cls')
-        db=Database()
-        rut_admin=input('Ingrese rut del administrador: ')
-        password_admin=input('Ingrese password del administrador: ')
-        rut_admin,password_admin=self.login_admin()
-        sql1='select * from ADMINISTRADOR where RUT_ADMIN='+repr(rut_admin)+'and CONTRASEÑA='+repr(password_admin)       
-        system('cls')     
-        try:
-            self.cursor.execute(sql1)
-            result=self.cursor.fetchone()
-            if result[0]==rut_admin and result[1]==password_admin:
-                while True:
-                    print('---Menu de Administrador---')
-                    elige2=input('\nElige una opción:\n\
-                    Registrar nuevo usuario (1)\n\
-                    Salir (s)\n=>')
-                    if elige2=='1':
-                        db.Registrar_usuario()
-                    elif elige2=='s':
-                        db.cerrarBD()
-                        system('cls')
-                        break
-                    else:
-                        ('Elige una opción valida')
-            else:
-                print('Acceso Denegado')
-                input('Presione Enter para continuar...')    
+            system('cls')
+            db=Database()
+            rut_admin=input('Ingrese rut del administrador: ')
+            password_admin=input('Ingrese password del administrador: ')
+            if rut_admin != '11111111-1' and password_admin!='123':
+                print('Ingrese las credenciales correctamente')
+                input('Presione Enter para continuar...')
                 system('cls')
                 db.cerrarBD()
-        except Exception as err:
-            self.conexion.rollback()
-            print(err)
+            else:
+                try:
+                    while True:
+                        system('cls')  
+                        print('---Menu de Administrador---')
+                        elige2=input('\nElige una opción:\n\
+                        Registrar nuevo usuario (1)\n\
+                        Salir (s)\n=>')
+                        if elige2=='1':
+                            db.Registrar_usuario()
+                        elif elige2=='s':
+                            db.cerrarBD()
+                            system('cls')
+                            break
+                        else:
+                            ('Elige una opción valida')
+                except Exception as err:
+                    self.conexion.rollback()
+                    print(err)
     
     
            
@@ -128,14 +118,18 @@ class Database:
              if result==None:
                  sql2='insert into ENCARGADO values('+repr(rut_enc)+','+repr(nombre_usuario)+','+repr(password_usuario)+')'
                  try:
-                     self.cursor.execute(sql2)
-                     self.conexion.commit()
-                     print('Se ha creado un nuevo usuario')
-                     input('Presione Enter para continuar...')
-                     system('cls')
+                    self.cursor.execute(sql2)
+                    self.conexion.commit()
+                    print('Se ha creado un nuevo usuario')
+                    input('Presione Enter para continuar...')
+                    system('cls')
                  except Exception as err:
-                     self.conexion.rollback()
-                     print(err)
+                    self.conexion.rollback()
+                    print(err)
+             elif rut_enc=='11111111-1':
+                 print('El administrador no puede ser un usuario')
+                 input('Presione Enter para continuar...')
+                 system('cls')
              else:
                  print('Ya existe un usuario con los datos ingresados')
                  input('Presione Enter para continuar...')
@@ -267,7 +261,7 @@ class Database:
 
   
 
-
+    
     
     def Asignacion(self):
         system('cls')
